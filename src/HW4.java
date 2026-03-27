@@ -7,10 +7,11 @@ public class HW4
     public static void main(String[] args)
     {
         Book[] books = new Book[100];
+        System.out.println();
+        System.out.println("----------Welcome to the book Program!----------");
+        System.out.println();
 
-        System.out.println("Welcome to the book Program!");
-
-        System.out.print("Would you like to create a book object? (yes/no):");
+        System.out.print("Would you like to create a book object? (yes/no): ");
         boolean keepGettingBooks = ReadResponse();
         int i = 0;
 
@@ -32,7 +33,7 @@ public class HW4
             }
         }
 
-        System.out.println("\nSure!");
+        System.out.println("Sure!");
 
         PrintAllBooks(books);
 
@@ -41,7 +42,7 @@ public class HW4
 
         while (keepSearching)
         {
-
+            SearchForBook(books);
 
             System.out.print("\nWould you like to search for another book? (yes/no): ");
 
@@ -69,7 +70,7 @@ public class HW4
             }
             else
             {
-                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+                System.out.print("Oops! That's not a valid entry. Please try again: ");
             }
         }
 
@@ -96,7 +97,7 @@ public class HW4
 
         if (bookType == 1)
         {
-            System.out.print("\nEnter the list price of " + title + " by " + author + ": ");
+            System.out.print("\nEnter the list price of " + title.toUpperCase() + " by " + author.toUpperCase() + ": ");
 
             float price = (new Scanner(System.in).nextFloat());
 
@@ -136,7 +137,7 @@ public class HW4
             splitResponse = response.split("/");
             if (splitResponse.length != 3)
             {
-                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+                System.out.print("Oops! That's not a valid entry. Please try again: ");
             }
             else
             {
@@ -168,7 +169,7 @@ public class HW4
             }
             else
             {
-                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+                System.out.print("Oops! That's not a valid entry. Please try again: ");
             }
         }
 
@@ -192,7 +193,13 @@ public class HW4
         while (!validResponse)
         {
             String response = (new Scanner(System.in).nextLine());
-            saleRate = Double.parseDouble(response.substring(0, response.length() - 1));
+
+            if (response.substring(response.length()-1).equalsIgnoreCase("%"))
+            {
+                response = response.substring(0, response.length()- 1);
+            }
+
+            saleRate = Double.parseDouble(response);
 
             if (saleRate > 0 && saleRate <= 100)
             {
@@ -200,7 +207,7 @@ public class HW4
             }
             else
             {
-                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+                System.out.print("Oops! That's not a valid entry. Please try again: ");
             }
         }
 
@@ -224,23 +231,23 @@ public class HW4
             }
             else
             {
-                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+                System.out.print("Oops! That's not a valid entry. Please try again: ");
             }
         }
 
-        System.out.print("\nGot it!");
+        System.out.println("Got it!");
     }
 
     private static void PrintEntry(Book book)
     {
-        System.out.println("Here is your " + book.getBookType().toLowerCase() + " information");
+        System.out.println("\nHere is your " + book.getBookType().toLowerCase() + " information");
 
         System.out.println(book);
     }
 
     private static void PrintAllBooks(Book[] books)
     {
-        System.out.println("Here are all the books you entered...");
+        System.out.println("\nHere are all the books you entered...");
 
         LibraryBook[] libraryBooks = new LibraryBook[100];
         int l = 0;
@@ -287,11 +294,183 @@ public class HW4
         System.out.println("____");
     }
 
-    private static void SearchForBook()
+    private static void SearchForBook(Book[] books)
     {
-        System.out.println("Search by isbn, author or title?: ");
+        System.out.print("\nSearch by isbn, author or title?: ");
+        boolean validResponse = false;
+        int searchMethod = -1;
 
+        while (!validResponse)
+        {
+            String response = (new Scanner(System.in).nextLine());
 
+            if (response.equalsIgnoreCase("isbn"))
+            {
+                searchMethod = 0;
+                validResponse = true;
+            }
+            else if (response.equalsIgnoreCase("author"))
+            {
+                searchMethod = 1;
+                validResponse = true;
+            }
+            else if (response.equalsIgnoreCase("title"))
+            {
+                searchMethod = 2;
+                validResponse = true;
+            }
+            else
+            {
+                System.out.print("Oops! That's not a valid entry. Please try again: ");
+            }
+        }
+
+        Book[] results = new Book[100];
+
+        int LBresults = 0;
+        int BBresults = 0;
+
+        validResponse = false;
+
+        if (searchMethod == 0)
+        {
+            System.out.print("\nEnter the first three characters of the isbn: ");
+            String response = "";
+
+            while (!validResponse)
+            {
+                response = (new Scanner(System.in).nextLine());
+
+                if (response.length() == 3)
+                {
+                    validResponse = true;
+                }
+                else
+                {
+                    System.out.print("Oops! That's not a valid entry. Please try again: ");
+                }
+            }
+
+            int b = 0;
+
+            for (Book book : books)
+            {
+                if (book == null) continue;
+
+                if (book.GetISBN().substring(0,3).equalsIgnoreCase(response))
+                {
+                    if (book.getBookType().equalsIgnoreCase("Library Book"))
+                    {
+                        results[b] = book;
+                        LBresults++;
+                    }
+                    else
+                    {
+                        results[b] = book;
+                        BBresults++;
+                    }
+
+                    b++;
+                }
+            }
+        }
+        else if (searchMethod == 1)
+        {
+            System.out.print("\nEnter the first three letters of the author: ");
+
+            String response = "";
+
+            while (!validResponse)
+            {
+                response = (new Scanner(System.in).nextLine());
+
+                if (response.length() == 3)
+                {
+                    validResponse = true;
+                }
+                else
+                {
+                    System.out.print("Oops! That's not a valid entry. Please try again: ");
+                }
+            }
+
+            int b = 0;
+
+            for (Book book : books)
+            {
+                if (book == null) continue;
+
+                if (book.GetAuthor().substring(0,3).equalsIgnoreCase(response))
+                {
+                    if (book.getBookType().equalsIgnoreCase("Library Book"))
+                    {
+                        results[b] = book;
+                        LBresults++;
+                    }
+                    else
+                    {
+                        results[b] = book;
+                        BBresults++;
+                    }
+
+                    b++;
+                }
+            }
+        }
+        else
+        {
+            System.out.print("\nEnter the first three letters of the title: ");
+
+            String response = "";
+
+            while (!validResponse)
+            {
+                response = (new Scanner(System.in).nextLine());
+
+                if (response.length() == 3)
+                {
+                    validResponse = true;
+                }
+                else
+                {
+                    System.out.print("Oops! That's not a valid entry. Please try again: ");
+                }
+            }
+
+            int b = 0;
+
+            for (Book book : books)
+            {
+                if (book == null) continue;
+
+                if (book.GetTitle().substring(0,3).equalsIgnoreCase(response))
+                {
+                    if (book.getBookType().equalsIgnoreCase("Library Book"))
+                    {
+                        results[b] = book;
+                        LBresults++;
+                    }
+                    else
+                    {
+                        results[b] = book;
+                        BBresults++;
+                    }
+
+                    b++;
+                }
+            }
+        }
+
+        System.out.println("\nWe found " + LBresults + " Library Book(s) and " + BBresults + " Bookstore Book(s):");
+
+        for (Book book : results)
+        {
+            if (book == null) continue;
+
+            System.out.println("    " + book);
+        }
+
+        System.out.println("____");
     }
 }
 
@@ -362,11 +541,12 @@ class BookstoreBook extends Book
         {
             String formattedPrice = String.format("%.2f", price);
             String formattedSalePrice = String.format("%.2f", GenerateSalePrice());
-            return "[" + super.toString() + ", $" + formattedPrice + " listed for $" + formattedSalePrice + "]";
+            return "[" + super.toString() + "-$" + formattedPrice + " listed for $" + formattedSalePrice + "]";
         }
         else
         {
-            return super.toString() + ", $" + price;
+            String formattedPrice = String.format("%.2f", price);
+            return "[" +super.toString() + "-$" + formattedPrice + "]";
         }
     }
 }
@@ -484,7 +664,7 @@ class LibraryBook extends Book
 
     private void GenerateCallNumber()
     {
-        SetCallNumber(GetSubjectCode() + "." + GetFloorNum() + "." + GetAuthor().substring(0,3).toUpperCase() + "." + GetISBN().substring(GetISBN().length() - 1));
+        SetCallNumber(GetSubjectCode() + "." + GetFloorNum() + "." + GetAuthor().substring(0,3).toUpperCase() + "." + GetISBN().substring(GetISBN().length() - 1).toUpperCase());
     }
 
     @Override

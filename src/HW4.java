@@ -70,7 +70,21 @@ public class HW4
     {
         System.out.print("\nEnter the author, title and the isbn of the book separated by /: ");
 
+        String response = (new Scanner(System.in).nextLine());
+
+        String[] splitResponse = response.split("/");
+
+        if (splitResponse.length > 0)
+        {
+            String author = splitResponse[0];
+            String title = splitResponse[1];
+            String isbn = splitResponse[2];
+        }
+
         System.out.println("Got it!");
+
+        System.out.print("\nNow, tell me if it is a bookstore book or a library book (enter BB for bookstore book or LB for library book): ");
+        
 
         //PrintEntry();
     }

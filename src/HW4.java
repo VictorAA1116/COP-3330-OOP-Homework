@@ -12,26 +12,36 @@ public class HW4
 
         System.out.print("Would you like to create a book object? (yes/no):");
         boolean keepGettingBooks = ReadResponse();
+        int i = 0;
 
         while (keepGettingBooks)
         {
-            GetBookEntry();
+            Book newBook = GetBookEntry();
+
+            books[i] = newBook;
+
+            PrintEntry(newBook);
 
             System.out.print("\nWould you like to create another book object? (yes/no): ");
 
             keepGettingBooks = ReadResponse();
+
+            if (keepGettingBooks)
+            {
+                i++;
+            }
         }
 
         System.out.println("\nSure!");
 
-        PrintAllBooks();
+        PrintAllBooks(books);
 
         System.out.print("\nWould you like to search for a book? (yes/no): ");
         boolean keepSearching = ReadResponse();
 
         while (keepSearching)
         {
-            GetBookEntry();
+
 
             System.out.print("\nWould you like to search for another book? (yes/no): ");
 
@@ -66,27 +76,159 @@ public class HW4
         return confirmed == 1;
     }
 
-    private static void GetBookEntry()
+    private static Book GetBookEntry()
     {
         System.out.print("\nEnter the author, title and the isbn of the book separated by /: ");
 
-        String response = (new Scanner(System.in).nextLine());
+        String[] splitResponse = ReadInitialEntry();
 
-        String[] splitResponse = response.split("/");
-
-        if (splitResponse.length > 0)
-        {
-            String author = splitResponse[0];
-            String title = splitResponse[1];
-            String isbn = splitResponse[2];
-        }
+        String author = splitResponse[0];
+        String title = splitResponse[1];
+        String isbn = splitResponse[2];
 
         System.out.println("Got it!");
 
         System.out.print("\nNow, tell me if it is a bookstore book or a library book (enter BB for bookstore book or LB for library book): ");
-        
 
-        //PrintEntry();
+        int bookType = CheckBookType()? 1 : 0;
+
+        System.out.println("Got it!");
+
+        if (bookType == 1)
+        {
+            System.out.print("\nEnter the list price of " + title + " by " + author + ": ");
+
+            float price = (new Scanner(System.in).nextFloat());
+
+            System.out.print("\nIs it on sale? (yes/no): ");
+
+            boolean onSale = ReadResponse();
+            double saleRate = 0.0d;
+
+            if (onSale)
+            {
+                saleRate = ReadSaleRate();
+            }
+
+            System.out.println("Got it!");
+
+            return new BookstoreBook(author, title, isbn, onSale, price, saleRate);
+        }
+        else
+        {
+            LibraryBook newBook = new LibraryBook(author, title, isbn);
+
+            ReadSubjectEntry(newBook);
+
+            return newBook;
+        }
+    }
+
+    private static String[] ReadInitialEntry()
+    {
+        boolean validResponse = false;
+        String[] splitResponse = new String[0];
+
+        while (!validResponse)
+        {
+            String response = (new Scanner(System.in).nextLine());
+
+            splitResponse = response.split("/");
+            if (splitResponse.length != 3)
+            {
+                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+            }
+            else
+            {
+                validResponse = true;
+            }
+        }
+
+        return splitResponse;
+    }
+
+    private static boolean CheckBookType()
+    {
+        boolean validInput = false;
+        int bookType = -1;
+
+        while (!validInput)
+        {
+            String response = (new Scanner(System.in).nextLine());
+
+            if (response.equalsIgnoreCase("LB"))
+            {
+                bookType = 0;
+                validInput = true;
+            }
+            else if (response.equalsIgnoreCase("BB"))
+            {
+                bookType = 1;
+                validInput = true;
+            }
+            else
+            {
+                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+            }
+        }
+
+        if (bookType == 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private static double ReadSaleRate()
+    {
+        System.out.print("\nDeduction percentage: ");
+
+        boolean validResponse = false;
+        double saleRate = -1.0d;
+
+        while (!validResponse)
+        {
+            String response = (new Scanner(System.in).nextLine());
+            saleRate = Double.parseDouble(response.substring(0, response.length() - 1));
+
+            if (saleRate > 0 && saleRate <= 100)
+            {
+                validResponse = true;
+            }
+            else
+            {
+                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+            }
+        }
+
+        return saleRate;
+    }
+
+    private static void ReadSubjectEntry(LibraryBook book)
+    {
+        System.out.print("\nWhat's the subject?: ");
+
+        boolean validResponse = false;
+
+        while (!validResponse)
+        {
+            String subject = (new Scanner(System.in).nextLine());
+
+            if (book.VerifySubject(subject))
+            {
+                validResponse = true;
+                book.SetSubject(subject);
+            }
+            else
+            {
+                System.out.print("\nOops! That's not a valid entry. Please try again: ");
+            }
+        }
+
+        System.out.print("\nGot it!");
     }
 
     private static void PrintEntry(Book book)
@@ -96,8 +238,59 @@ public class HW4
         System.out.println(book);
     }
 
-    private static void PrintAllBooks()
+    private static void PrintAllBooks(Book[] books)
     {
+        System.out.println("Here are all the books you entered...");
+
+        LibraryBook[] libraryBooks = new LibraryBook[100];
+        int l = 0;
+
+        BookstoreBook[] bookstoreBooks = new BookstoreBook[100];
+        int b = 0;
+
+        for (Book book: books)
+        {
+            if (book == null) continue;
+
+            if (book.getBookType() == "Library Book")
+            {
+                libraryBooks[l] = (LibraryBook) book;
+                l++;
+            }
+            else
+            {
+                bookstoreBooks[b] = (BookstoreBook) book;
+                b++;
+            }
+        }
+
+        System.out.println("Library Books (" +  l + ")");
+
+        for (LibraryBook book : libraryBooks)
+        {
+            if (book == null) continue;
+
+            System.out.println("    " + book);
+        }
+
+        System.out.println("____");
+
+        System.out.println("Bookstore Books (" + b + ")");
+
+        for (BookstoreBook book : bookstoreBooks)
+        {
+            if (book == null) continue;
+
+            System.out.println("    " + book);
+        }
+
+        System.out.println("____");
+    }
+
+    private static void SearchForBook()
+    {
+        System.out.println("Search by isbn, author or title?: ");
+
 
     }
 }
@@ -167,7 +360,9 @@ class BookstoreBook extends Book
     {
         if (onSale)
         {
-            return super.toString() + ", $" + price + " listed for $" + GenerateSalePrice();
+            String formattedPrice = String.format("%.2f", price);
+            String formattedSalePrice = String.format("%.2f", GenerateSalePrice());
+            return "[" + super.toString() + ", $" + formattedPrice + " listed for $" + formattedSalePrice + "]";
         }
         else
         {
@@ -234,8 +429,16 @@ class LibraryBook extends Book
 
     public void SetSubject(String subject)
     {
+        boolean validSubject = VerifySubject(subject);
+        if (!validSubject) return;
+
         this.subject = subject;
         GenerateCallNumber();
+    }
+
+    public boolean VerifySubject(String subject)
+    {
+        return subjectCodes.containsValue(subject.toUpperCase());
     }
 
     public String GetCallNumber()
@@ -252,7 +455,7 @@ class LibraryBook extends Book
     {
         for (Map.Entry subjectCodeEntry : subjectCodes.entrySet())
         {
-            if (subject == subjectCodeEntry.getValue())
+            if (subject.equalsIgnoreCase(subjectCodeEntry.getValue().toString()))
             {
                 return subjectCodeEntry.getKey().toString();
             }
@@ -287,7 +490,7 @@ class LibraryBook extends Book
     @Override
     public String toString()
     {
-        return super.toString() + "-" + callNumber;
+        return "[" + super.toString() + "-" + callNumber + "]";
     }
 }
 
@@ -346,6 +549,6 @@ abstract class Book
     @Override
     public String toString()
     {
-        return isbn + "-" + title + " by " + author;
+        return isbn + "-" + title.toUpperCase() + " by " + author.toUpperCase();
     }
 }

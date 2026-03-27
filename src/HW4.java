@@ -484,7 +484,7 @@ class LibraryBook extends Book
 
     private void GenerateCallNumber()
     {
-        SetCallNumber(GetSubjectCode() + "." + GetFloorNum() + "." + GetAuthor().substring(0,3) + "." + GetISBN().substring(GetISBN().length() - 1));
+        SetCallNumber(GetSubjectCode() + "." + GetFloorNum() + "." + GetAuthor().substring(0,3).toUpperCase() + "." + GetISBN().substring(GetISBN().length() - 1));
     }
 
     @Override

@@ -98,7 +98,21 @@ public class FinalProject
 
     public static void AddStudent()
     {
+        boolean allInputsValid = true;
 
+        while (allInputsValid)
+        {
+            System.out.println("Enter Student Info:");
+            System.out.print("\tName: ");
+
+            Student newStudent = new Student();
+
+            newStudent.SetFullName((new Scanner(System.in).nextLine()));
+
+            System.out.println("\n\tID: ");
+
+            allInputsValid = 
+        }
     }
 
     public static void PrintTuition()

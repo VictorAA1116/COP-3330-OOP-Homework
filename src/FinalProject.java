@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 // Final Project Done by : Victor Avila
@@ -9,9 +10,9 @@ public class FinalProject
     {
         UniversityClass university = new UniversityClass();
 
-        System.out.println("\t\t\tWelcome to the Personnel Management System");
+        System.out.println("\n\t\t\tWelcome to the Personnel Management System");
 
-        ShowMainMenu();
+        ShowMainMenu(university);
     }
 
     public static String ValidateInput(String input, String[] validInputs)
@@ -29,9 +30,9 @@ public class FinalProject
         return null;
     }
 
-    public static void ShowMainMenu()
+    public static void ShowMainMenu(UniversityClass university)
     {
-        System.out.println("Choose one of the options:");
+        System.out.println("\nChoose one of the options:");
         System.out.println("1 - Add a faculty");
         System.out.println("2 - Add a student");
         System.out.println("3 - Print tuition invoice for a student");
@@ -62,7 +63,7 @@ public class FinalProject
                 break;
 
             case "2":
-                AddStudent();
+                AddStudent(university);
                 break;
 
             case "3":
@@ -96,23 +97,131 @@ public class FinalProject
 
     }
 
-    public static void AddStudent()
+    public static void AddStudent(UniversityClass university)
     {
-        boolean allInputsValid = true;
+        boolean allInputsValid = false;
+        Scanner scanner = new Scanner(System.in);
 
-        while (allInputsValid)
+        Student newStudent = new Student();
+
+        int attempts = 1;
+
+        while (!allInputsValid && attempts <= 3)
         {
-            System.out.println("Enter Student Info:");
+            attempts++;
+
+            System.out.println("\nEnter Student Info:");
             System.out.print("\tName: ");
 
-            Student newStudent = new Student();
+            boolean nameValid = false;
 
-            newStudent.SetFullName((new Scanner(System.in).nextLine()));
+            try
+            {
+                nameValid = newStudent.SetFullName(scanner.nextLine());
+            }
+            catch (InputMismatchException ex)
+            {
+                nameValid = false;
+            }
 
-            System.out.println("\n\tID: ");
+            if (!nameValid)
+            {
+                System.out.println("\nInvalid Name Format. Must be all alphabetic characters");
 
-            allInputsValid = 
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            System.out.print("\tID: ");
+
+            boolean IDvalid = false;
+
+            try
+            {
+                IDvalid = newStudent.SetID(scanner.nextLine());
+            }
+            catch (InputMismatchException ex)
+            {
+                IDvalid = false;
+            }
+
+
+            if (!IDvalid)
+            {
+                System.out.println("\nInvalid ID Format. Must be LetterLetterDigitDigitDigitDigit");
+
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            System.out.print("\tGPA: ");
+
+            boolean GPAvalid = false;
+
+            try
+            {
+                GPAvalid = newStudent.SetGPA(scanner.nextDouble());
+            }
+            catch (InputMismatchException ex)
+            {
+                GPAvalid = false;
+            }
+
+            if (!GPAvalid)
+            {
+                System.out.println("\nInvalid GPA Format. Must be a numerical value between 0.0 and 4.0");
+
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            System.out.print("\tCredit Hours: ");
+
+            boolean CreditsValid = false;
+
+            try
+            {
+                CreditsValid = newStudent.SetCreditHours(scanner.nextInt());
+            }
+            catch (InputMismatchException ex)
+            {
+                CreditsValid = false;
+            }
+
+            if (!CreditsValid)
+            {
+                System.out.println("\nInvalid Credit Hours Format. Must be a positive number");
+
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            allInputsValid = true;
         }
+
+        if (allInputsValid)
+        {
+            university.AddPerson(newStudent);
+            System.out.println("\nStudent Added!");
+        }
+
+        ShowMainMenu(university);
     }
 
     public static void PrintTuition()
@@ -207,9 +316,20 @@ abstract class Person
         return fullName;
     }
 
-    public void SetFullName(String newName)
+    public boolean SetFullName(String newName)
     {
+        if (newName.isBlank()) return false;
+
+        for (int i = 0; i < newName.length(); i++)
+        {
+            if (!Character.isAlphabetic(newName.charAt(i)) && !Character.isWhitespace(newName.charAt(i)))
+            {
+                return false;
+            }
+        }
+
         this.fullName = newName;
+        return true;
     }
 
     public String GetID()
@@ -219,7 +339,7 @@ abstract class Person
 
     public boolean SetID(String newID)
     {
-        if (newID.length() > 6 || newID.length() <= 0) return false;
+        if (newID.length() != 6) return false;
 
         boolean validInput = true;
 

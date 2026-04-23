@@ -200,12 +200,64 @@ public class FinalProject
 
     public static void PrintTuition(UniversityClass university)
     {
+        int attempts = 1;
 
+        while (attempts <= 3)
+        {
+            attempts++;
+
+            System.out.print("\nEnter the student's ID: ");
+
+            String ID = (new Scanner(System.in)).nextLine();
+
+            Student foundStudent = (Student) university.SearchForPerson(ID, UniversityClass.PersonType.Student);
+
+            if (foundStudent == null)
+            {
+                System.out.println("Sorry, no student exists with ID = " + ID);
+
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            foundStudent.print();
+            attempts = 4;
+        }
     }
 
     public static void PrintFacultyInfo(UniversityClass university)
     {
+        int attempts = 1;
 
+        while (attempts <= 3)
+        {
+            attempts++;
+
+            System.out.print("\nEnter the faculty's ID: ");
+
+            String ID = (new Scanner(System.in)).nextLine();
+
+            Faculty foundFaculty = (Faculty) university.SearchForPerson(ID, UniversityClass.PersonType.Faculty);
+
+            if (foundFaculty == null)
+            {
+                System.out.println("Sorry, no faculty exists with ID = " + ID);
+
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            foundFaculty.print();
+            attempts = 4;
+        }
     }
 
     public static void AddStaff(UniversityClass university)
@@ -263,6 +315,33 @@ public class FinalProject
 
     public static void PrintStaffInfo(UniversityClass university)
     {
+        int attempts = 1;
+
+        while (attempts <= 3)
+        {
+            attempts++;
+
+            System.out.print("\nEnter the staff's ID: ");
+
+            String ID = (new Scanner(System.in)).nextLine();
+
+            Staff foundStaff = (Staff) university.SearchForPerson(ID, UniversityClass.PersonType.Staff);
+
+            if (foundStaff == null)
+            {
+                System.out.println("Sorry, no staff exists with ID = " + ID);
+
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            foundStaff.print();
+            attempts = 4;
+        }
 
     }
 
@@ -515,6 +594,13 @@ public class FinalProject
 
 class UniversityClass
 {
+    public enum PersonType
+    {
+        Student,
+        Faculty,
+        Staff
+    }
+
     private ArrayList<Person> AllPeople = new ArrayList<Person>(100);
 
     public boolean AddPerson(Person person)
@@ -532,6 +618,45 @@ class UniversityClass
     {
         AllPeople.remove(person);
         return true;
+    }
+
+    public Person SearchForPerson(String ID, PersonType type)
+    {
+        if (ID == null || ID.isBlank()) return null;
+
+        for (Person person : AllPeople)
+        {
+            if (person == null) continue;
+
+            if (ID.equalsIgnoreCase(person.GetID()))
+            {
+                switch (type)
+                {
+                    case Student:
+                        if (person instanceof Student)
+                        {
+                            return person;
+                        }
+                        return null;
+                    case Faculty:
+                        if (person instanceof Faculty)
+                        {
+                            return person;
+                        }
+                        return null;
+                    case Staff:
+                        if (person instanceof Staff)
+                        {
+                            return person;
+                        }
+                        return null;
+                    default:
+                        return null;
+                }
+            }
+        }
+
+        return null;
     }
 
     public boolean ValidateID (String ID)
@@ -555,16 +680,16 @@ abstract class Person
     private String fullName;
     private String id;
 
+    public Person ()
+    {
+        SetFullName(null);
+        SetID(null);
+    }
+
     public Person (String fullName, String id)
     {
         SetFullName(fullName);
         SetID(id);
-    }
-
-    public Person ()
-    {
-        fullName = null;
-        id = null;
     }
 
     public abstract void print();
@@ -576,7 +701,7 @@ abstract class Person
 
     public boolean SetFullName(String newName)
     {
-        if (newName.isBlank()) return false;
+        if (newName == null || newName.isBlank()) return false;
 
         for (int i = 0; i < newName.length(); i++)
         {
@@ -597,7 +722,7 @@ abstract class Person
 
     public boolean SetID(String newID)
     {
-        if (newID.length() != 6) return false;
+        if (newID == null || newID.length() != 6) return false;
 
         boolean validInput = true;
 
@@ -630,18 +755,16 @@ abstract class Employee extends Person
 {
     private String department;
 
-    public Employee(String fullName, String id, String department)
-    {
-        SetFullName(fullName);
-        SetID(id);
-        SetDepartment(department);
-    }
-
     public Employee ()
     {
-        SetFullName(null);
-        SetID(null);
+        super();
         SetDepartment(null);
+    }
+
+    public Employee(String fullName, String id, String department)
+    {
+        super(fullName, id);
+        SetDepartment(department);
     }
 
     public String GetDepartment()
@@ -651,6 +774,8 @@ abstract class Employee extends Person
 
     public boolean SetDepartment(String newDepartment)
     {
+        if (newDepartment == null) return false;
+
         boolean validInput =
                 newDepartment.equalsIgnoreCase("Mathematics")
                 || newDepartment.equalsIgnoreCase("Engineering")
@@ -673,7 +798,11 @@ class Faculty extends Employee
     @Override
     public void print()
     {
-        System.out.print("");
+        System.out.println("\nFaculty Info:");
+        System.out.println("\tName: " + GetFullName());
+        System.out.println("\tID: " + GetID());
+        System.out.println("\tDepartment: " + GetDepartment());
+        System.out.println("\tRank: " + GetRank());
     }
 
     public String GetRank()
@@ -697,10 +826,26 @@ class Staff extends Employee
 {
     private String status;
 
+    public Staff()
+    {
+        super();
+        SetStatus(null);
+    }
+
+    public Staff (String fullName, String id, String department, String status)
+    {
+        super(fullName, id, department);
+        SetStatus(status);
+    }
+
     @Override
     public void print()
     {
-
+        System.out.println("\nStaff Info:");
+        System.out.println("\tName: " + GetFullName());
+        System.out.println("\tID: " + GetID());
+        System.out.println("\tDepartment: " + GetDepartment());
+        System.out.println("\tStatus: " + GetStatus());
     }
 
     public String GetStatus()
@@ -710,6 +855,8 @@ class Staff extends Employee
 
     public boolean SetStatus(String newStatus)
     {
+        if (newStatus == null) return false;
+
         if (newStatus.equalsIgnoreCase("Part-Time") || newStatus.equalsIgnoreCase("Full-Time"))
         {
             this.status = newStatus;
@@ -725,10 +872,30 @@ class Student extends Person
     private double gpa;
     private int creditHours;
 
+    public Student()
+    {
+        super();
+        SetGPA(0.0d);
+        SetCreditHours(0);
+    }
+
+    public Student(String fullName, String id, double GPA, int creditHours)
+    {
+        super(fullName, id);
+        SetGPA(GPA);
+        SetCreditHours(creditHours);
+    }
+
     @Override
     public void print()
     {
-
+        System.out.println("\nTuition Invoice for " + GetFullName());
+        System.out.println("---------------------------------------------");
+        System.out.println(GetFullName() + "\t\t" + GetID());
+        System.out.println("Credit Hours: " + GetCreditHours());
+        System.out.println("Fees: $52");
+        System.out.println("Total Payment (after discount): " + CalculateTuition());
+        System.out.println("---------------------------------------------");
     }
 
     public double GetGPA()

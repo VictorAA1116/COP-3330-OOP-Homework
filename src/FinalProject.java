@@ -224,9 +224,11 @@ public class FinalProject
                 continue;
             }
 
-            foundStudent.print();
+            foundStudent.printInvoice();
             attempts = 4;
         }
+
+        ShowMainMenu(university);
     }
 
     public static void PrintFacultyInfo(UniversityClass university)
@@ -258,6 +260,8 @@ public class FinalProject
             foundFaculty.print();
             attempts = 4;
         }
+
+        ShowMainMenu(university);
     }
 
     public static void AddStaff(UniversityClass university)
@@ -343,11 +347,74 @@ public class FinalProject
             attempts = 4;
         }
 
+        ShowMainMenu(university);
     }
 
     public static void DeletePerson(UniversityClass university)
     {
+        int attempts = 1;
+        Person foundPerson = null;
 
+        while (attempts <= 3)
+        {
+            attempts++;
+
+            System.out.print("Enter the person's ID: ");
+
+            String ID = (new Scanner(System.in).nextLine());
+
+            foundPerson = university.SearchForPerson(ID, UniversityClass.PersonType.Any);
+
+            if (foundPerson == null)
+            {
+                System.out.println("Sorry, no person exists with ID = " + ID);
+
+                if (attempts <= 3)
+                {
+                    System.out.println("Try Again!");
+                }
+
+                continue;
+            }
+
+            attempts = 4;
+        }
+        
+        if (foundPerson != null)
+        {
+            System.out.println("The following person was found with the ID: " + foundPerson.GetID());
+
+            foundPerson.print();
+
+            System.out.print("\nAre you sure you want to delete this person? (Y/N): ");
+
+            String[] validInputs = {"Y", "N"};
+            String response = null;
+            attempts = 1;
+
+            while (attempts <= 3)
+            {
+                attempts++;
+
+                response = ValidateInput((new Scanner(System.in).nextLine()), validInputs);
+
+                if (response != null) break;
+
+                System.out.println("Try Again!");
+            }
+
+            if (response != null && response.equalsIgnoreCase("Y"))
+            {
+                university.DeletePerson(foundPerson);
+                System.out.println(foundPerson.GetFullName() + "has been deleted.");
+            }
+            else
+            {
+                System.out.println("Cancelling deletion of " + foundPerson.GetFullName());
+            }
+        }
+
+        ShowMainMenu(university);
     }
 
     public static void ExitProgram(UniversityClass university)
@@ -392,11 +459,11 @@ public class FinalProject
 
         if (response.equalsIgnoreCase("1"))
         {
-
+            university.CreateReport(1);
         }
         else
         {
-
+            university.CreateReport(2);
         }
     }
 
@@ -598,7 +665,8 @@ class UniversityClass
     {
         Student,
         Faculty,
-        Staff
+        Staff,
+        Any
     }
 
     private ArrayList<Person> AllPeople = new ArrayList<Person>(100);
@@ -650,6 +718,8 @@ class UniversityClass
                             return person;
                         }
                         return null;
+                    case Any:
+                        return person;
                     default:
                         return null;
                 }
@@ -672,6 +742,30 @@ class UniversityClass
         }
 
         return true;
+    }
+
+    public void CreateReport(int sortType)
+    {
+        if (sortType == 1)
+        {
+            SortStudentsByGPA();
+        }
+        else
+        {
+            SortStudentsByName();
+        }
+
+
+    }
+
+    private void SortStudentsByName()
+    {
+
+    }
+
+    private void SortStudentsByGPA()
+    {
+
     }
 }
 
@@ -888,6 +982,15 @@ class Student extends Person
 
     @Override
     public void print()
+    {
+        System.out.println("\nStudent Info:");
+        System.out.println("\tName: " + GetFullName());
+        System.out.println("\tID: " + GetID());
+        System.out.println("\tGPA: " + GetGPA());
+        System.out.println("\tCredit Hours: " + GetCreditHours());
+    }
+
+    public void printInvoice()
     {
         System.out.println("\nTuition Invoice for " + GetFullName());
         System.out.println("---------------------------------------------");

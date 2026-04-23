@@ -59,7 +59,7 @@ public class FinalProject
         switch (response)
         {
             case "1":
-                AddFaculty();
+                AddFaculty(university);
                 break;
 
             case "2":
@@ -67,41 +67,88 @@ public class FinalProject
                 break;
 
             case "3":
-                PrintTuition();
+                PrintTuition(university);
                 break;
 
             case "4":
-                PrintFacultyInfo();
+                PrintFacultyInfo(university);
                 break;
 
             case"5":
-                AddStaff();
+                AddStaff(university);
                 break;
 
             case "6":
-                PrintStaffInfo();
+                PrintStaffInfo(university);
                 break;
 
             case "7":
-                DeletePerson();
+                DeletePerson(university);
                 break;
 
             case "8":
-                ExitProgram();
+                ExitProgram(university);
                 break;
         }
     }
 
-    public static void AddFaculty()
+    public static void AddFaculty(UniversityClass university)
     {
+        boolean allInputsValid = false;
+        Scanner scanner = new Scanner(System.in);
+        Faculty newFaculty = new Faculty();
 
+        int attempts = 1;
+
+        while (!allInputsValid && attempts <= 3)
+        {
+            attempts++;
+
+            System.out.println("\nEnter Faculty Info: ");
+            System.out.print("\tName: ");
+
+            if (!ValidateName(newFaculty, scanner, attempts))
+            {
+                continue;
+            }
+
+            System.out.println("\tID: ");
+
+            if (!ValidateID(newFaculty, scanner, attempts, university))
+            {
+                continue;
+            }
+
+            System.out.println("\tDepartment: ");
+
+            if (!ValidateDepartment(newFaculty, scanner, attempts))
+            {
+                continue;
+            }
+
+            System.out.println("\tRank:");
+
+            if (!ValidateRank(newFaculty, scanner, attempts))
+            {
+                continue;
+            }
+
+            allInputsValid = true;
+        }
+
+        if (allInputsValid)
+        {
+            university.AddPerson(newFaculty);
+            System.out.println("\nFaculty Added!");
+        }
+
+        ShowMainMenu(university);
     }
 
     public static void AddStudent(UniversityClass university)
     {
         boolean allInputsValid = false;
         Scanner scanner = new Scanner(System.in);
-
         Student newStudent = new Student();
 
         int attempts = 1;
@@ -113,102 +160,29 @@ public class FinalProject
             System.out.println("\nEnter Student Info:");
             System.out.print("\tName: ");
 
-            boolean nameValid = false;
-
-            try
+            if (!ValidateName(newStudent, scanner, attempts))
             {
-                nameValid = newStudent.SetFullName(scanner.nextLine());
-            }
-            catch (InputMismatchException ex)
-            {
-                nameValid = false;
-            }
-
-            if (!nameValid)
-            {
-                System.out.println("\nInvalid Name Format. Must be all alphabetic characters");
-
-                if (attempts <= 3)
-                {
-                    System.out.println("Try Again!");
-                }
-
                 continue;
             }
 
             System.out.print("\tID: ");
 
-            boolean IDvalid = false;
-
-            try
+            if (!ValidateID(newStudent, scanner, attempts, university))
             {
-                IDvalid = newStudent.SetID(scanner.nextLine());
-            }
-            catch (InputMismatchException ex)
-            {
-                IDvalid = false;
-            }
-
-
-            if (!IDvalid)
-            {
-                System.out.println("\nInvalid ID Format. Must be LetterLetterDigitDigitDigitDigit");
-
-                if (attempts <= 3)
-                {
-                    System.out.println("Try Again!");
-                }
-
                 continue;
             }
 
             System.out.print("\tGPA: ");
 
-            boolean GPAvalid = false;
-
-            try
+            if (!ValidateGPA(newStudent, scanner, attempts))
             {
-                GPAvalid = newStudent.SetGPA(scanner.nextDouble());
-            }
-            catch (InputMismatchException ex)
-            {
-                GPAvalid = false;
-            }
-
-            if (!GPAvalid)
-            {
-                System.out.println("\nInvalid GPA Format. Must be a numerical value between 0.0 and 4.0");
-
-                if (attempts <= 3)
-                {
-                    System.out.println("Try Again!");
-                }
-
                 continue;
             }
 
             System.out.print("\tCredit Hours: ");
 
-            boolean CreditsValid = false;
-
-            try
+            if (!ValidateCreditHours(newStudent, scanner, attempts))
             {
-                CreditsValid = newStudent.SetCreditHours(scanner.nextInt());
-            }
-            catch (InputMismatchException ex)
-            {
-                CreditsValid = false;
-            }
-
-            if (!CreditsValid)
-            {
-                System.out.println("\nInvalid Credit Hours Format. Must be a positive number");
-
-                if (attempts <= 3)
-                {
-                    System.out.println("Try Again!");
-                }
-
                 continue;
             }
 
@@ -224,34 +198,318 @@ public class FinalProject
         ShowMainMenu(university);
     }
 
-    public static void PrintTuition()
+    public static void PrintTuition(UniversityClass university)
     {
 
     }
 
-    public static void PrintFacultyInfo()
+    public static void PrintFacultyInfo(UniversityClass university)
     {
 
     }
 
-    public static void AddStaff()
+    public static void AddStaff(UniversityClass university)
+    {
+        boolean allInputsValid = false;
+        Scanner scanner = new Scanner(System.in);
+        Staff newStaff = new Staff();
+
+        int attempts = 1;
+
+        while (!allInputsValid && attempts <= 3)
+        {
+            attempts++;
+
+            System.out.println("\nEnter Staff Info: ");
+            System.out.print("\tName: ");
+
+            if (!ValidateName(newStaff, scanner, attempts))
+            {
+                continue;
+            }
+
+            System.out.println("\tID: ");
+
+            if (!ValidateID(newStaff, scanner, attempts, university))
+            {
+                continue;
+            }
+
+            System.out.println("\tDepartment: ");
+
+            if (!ValidateDepartment(newStaff, scanner, attempts))
+            {
+                continue;
+            }
+
+            System.out.println("\tRank:");
+
+            if (!ValidateStatus(newStaff, scanner, attempts))
+            {
+                continue;
+            }
+
+            allInputsValid = true;
+        }
+
+        if (allInputsValid)
+        {
+            university.AddPerson(newStaff);
+            System.out.println("\nStaff Added!");
+        }
+
+        ShowMainMenu(university);
+    }
+
+    public static void PrintStaffInfo(UniversityClass university)
     {
 
     }
 
-    public static void PrintStaffInfo()
+    public static void DeletePerson(UniversityClass university)
     {
 
     }
 
-    public static void DeletePerson()
+    public static void ExitProgram(UniversityClass university)
     {
+        System.out.print("\nWould you like to create the report? (Y/N): ");
 
+        String[] validInputs = {"Y", "N"};
+        String response;
+
+        while (true)
+        {
+            response = ValidateInput((new Scanner(System.in).nextLine()), validInputs);
+
+            if (response != null) break;
+
+            System.out.println("Try Again!");
+        }
+
+        if (response.equalsIgnoreCase("Y"))
+        {
+            CreateReport(university);
+        }
+
+        System.out.println("\nGoodbye!");
     }
 
-    public static void ExitProgram()
+    public static void CreateReport(UniversityClass university)
     {
+        System.out.println("Would you like to sort your students by GPA or name? (Enter 1 for GPA. Enter 2 for name): ");
 
+        String[] validInputs = {"1", "2"};
+        String response;
+
+        while (true)
+        {
+            response = ValidateInput((new Scanner(System.in).nextLine()), validInputs);
+
+            if (response != null) break;
+
+            System.out.println("Try Again!");
+        }
+
+        if (response.equalsIgnoreCase("1"))
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    public static boolean ValidateName(Person person, Scanner scanner, int attempts)
+    {
+        boolean nameValid = false;
+
+        try
+        {
+            nameValid = person.SetFullName(scanner.nextLine());
+        }
+        catch (InputMismatchException ex)
+        {
+            nameValid = false;
+        }
+
+        if (!nameValid)
+        {
+            System.out.println("\nInvalid Name Format. Must be all alphabetic characters");
+
+            if (attempts <= 3)
+            {
+                System.out.println("Try Again!");
+            }
+        }
+
+        return nameValid;
+    }
+
+    public static boolean ValidateID(Person person, Scanner scanner, int attempts, UniversityClass university)
+    {
+        boolean IDvalid = false;
+
+        try
+        {
+            IDvalid = person.SetID(scanner.nextLine());
+        }
+        catch (InputMismatchException ex)
+        {
+            IDvalid = false;
+        }
+
+        if (!IDvalid)
+        {
+            System.out.println("\nInvalid ID Format. Must be LetterLetterDigitDigitDigitDigit");
+
+            if (attempts <= 3)
+            {
+                System.out.println("Try Again!");
+            }
+
+            return IDvalid;
+        }
+
+        IDvalid = university.ValidateID(person.GetID());
+
+        if (!IDvalid)
+        {
+            System.out.println("\n Invalid ID. Must be a unique ID for this person.");
+        }
+
+        return IDvalid;
+    }
+
+    public static boolean ValidateGPA(Student student, Scanner scanner, int attempts)
+    {
+        boolean GPAvalid = false;
+
+        try
+        {
+            GPAvalid = student.SetGPA(scanner.nextDouble());
+        }
+        catch (InputMismatchException ex)
+        {
+            GPAvalid = false;
+        }
+
+        if (!GPAvalid)
+        {
+            System.out.println("\nInvalid GPA Format. Must be a numerical value between 0.0 and 4.0");
+
+            if (attempts <= 3)
+            {
+                System.out.println("Try Again!");
+            }
+        }
+
+        return GPAvalid;
+    }
+
+    public static boolean ValidateCreditHours(Student student, Scanner scanner, int attempts)
+    {
+        boolean CreditsValid = false;
+
+        try
+        {
+            CreditsValid = student.SetCreditHours(scanner.nextInt());
+        }
+        catch (InputMismatchException ex)
+        {
+            CreditsValid = false;
+        }
+
+        if (!CreditsValid)
+        {
+            System.out.println("\nInvalid Credit Hours Format. Must be a positive number");
+
+            if (attempts <= 3)
+            {
+                System.out.println("Try Again!");
+            }
+        }
+
+        return CreditsValid;
+    }
+
+    public static boolean ValidateDepartment(Employee employee, Scanner scanner, int attempts)
+    {
+        boolean departmentValid = false;
+
+        try
+        {
+            departmentValid = employee.SetDepartment(scanner.nextLine());
+        }
+        catch (InputMismatchException ex)
+        {
+            departmentValid = false;
+        }
+
+        if (!departmentValid)
+        {
+            System.out.println("\nInvalid Department Format. Must be Mathematics, Engineering, or English");
+
+            if (attempts <= 3)
+            {
+                System.out.println("Try Again!");
+            }
+        }
+
+        return departmentValid;
+    }
+
+    public static boolean ValidateRank(Faculty faculty, Scanner scanner, int attempts)
+    {
+        boolean rankValid = false;
+
+        try
+        {
+            rankValid = faculty.SetRank(scanner.nextLine());
+        }
+        catch (InputMismatchException ex)
+        {
+            rankValid = false;
+        }
+
+        if (!rankValid)
+        {
+            System.out.println("\nInvalid Rank Format: Must be either Professor or Adjunct");
+
+            if (attempts <= 3)
+            {
+                System.out.println("Try Again!");
+            }
+        }
+
+        return rankValid;
+    }
+
+    public static boolean ValidateStatus(Staff staff, Scanner scanner, int attempts)
+    {
+        boolean statusValid = false;
+
+        try
+        {
+            statusValid = staff.SetStatus(scanner.nextLine());
+        }
+        catch (InputMismatchException ex)
+        {
+            statusValid = false;
+        }
+
+        if (!statusValid)
+        {
+            System.out.println("\nInvalid Status Format: Must be either Part-Time or Full-Time");
+
+            if (attempts <= 3)
+            {
+                System.out.println("Try Again!");
+            }
+        }
+
+        return statusValid;
     }
 }
 

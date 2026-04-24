@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -467,6 +468,8 @@ public class FinalProject
         {
             university.CreateReport(2);
         }
+
+        System.out.println("Report created and saved to report.txt!");
     }
 
     public static boolean ValidateName(Person person, Scanner scanner, int attempts)
@@ -797,7 +800,9 @@ class UniversityClass
         AllPeople.addAll(staffList);
         AllPeople.addAll(studentList);
 
-        try (FileWriter writer = new FileWriter("report.txt"))
+        File reportFile = new File("report.txt");
+
+        try (FileWriter writer = new FileWriter(reportFile))
         {
             LocalDate today = LocalDate.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -842,6 +847,8 @@ class UniversityClass
                 writer.write("\n\tCredit Hours:  " + student.GetCreditHours());
                 i++;
             }
+
+            System.out.println("\nFile Path" + reportFile.getAbsolutePath());
         }
         catch (IOException ex)
         {

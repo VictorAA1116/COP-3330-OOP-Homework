@@ -56,7 +56,7 @@ public class FinalProject
 
             if (response != null) break;
 
-            System.out.println("Try Again!");
+            System.out.print("Try Again!: ");
         }
 
         switch (response)
@@ -115,21 +115,21 @@ public class FinalProject
                 continue;
             }
 
-            System.out.println("\tID: ");
+            System.out.print("\tID: ");
 
             if (!ValidateID(newFaculty, scanner, attempts, university))
             {
                 continue;
             }
 
-            System.out.println("\tDepartment: ");
+            System.out.print("\tDepartment: ");
 
             if (!ValidateDepartment(newFaculty, scanner, attempts))
             {
                 continue;
             }
 
-            System.out.println("\tRank:");
+            System.out.print("\tRank: ");
 
             if (!ValidateRank(newFaculty, scanner, attempts))
             {
@@ -221,7 +221,7 @@ public class FinalProject
 
                 if (attempts <= 3)
                 {
-                    System.out.println("Try Again!");
+                    System.out.print("Try Again!: ");
                 }
 
                 continue;
@@ -254,7 +254,7 @@ public class FinalProject
 
                 if (attempts <= 3)
                 {
-                    System.out.println("Try Again!");
+                    System.out.print("Try Again!: ");
                 }
 
                 continue;
@@ -287,21 +287,21 @@ public class FinalProject
                 continue;
             }
 
-            System.out.println("\tID: ");
+            System.out.print("\tID: ");
 
             if (!ValidateID(newStaff, scanner, attempts, university))
             {
                 continue;
             }
 
-            System.out.println("\tDepartment: ");
+            System.out.print("\tDepartment: ");
 
             if (!ValidateDepartment(newStaff, scanner, attempts))
             {
                 continue;
             }
 
-            System.out.println("\tRank:");
+            System.out.print("\tStatus: ");
 
             if (!ValidateStatus(newStaff, scanner, attempts))
             {
@@ -340,7 +340,7 @@ public class FinalProject
 
                 if (attempts <= 3)
                 {
-                    System.out.println("Try Again!");
+                    System.out.print("Try Again!: ");
                 }
 
                 continue;
@@ -362,7 +362,7 @@ public class FinalProject
         {
             attempts++;
 
-            System.out.print("Enter the person's ID: ");
+            System.out.print("\nEnter the person's ID: ");
 
             String ID = (new Scanner(System.in).nextLine());
 
@@ -374,7 +374,7 @@ public class FinalProject
 
                 if (attempts <= 3)
                 {
-                    System.out.println("Try Again!");
+                    System.out.print("Try Again!: ");
                 }
 
                 continue;
@@ -385,7 +385,7 @@ public class FinalProject
         
         if (foundPerson != null)
         {
-            System.out.println("The following person was found with the ID: " + foundPerson.GetID());
+            System.out.println("\nThe following person was found with the ID: " + foundPerson.GetID());
 
             foundPerson.print();
 
@@ -403,13 +403,13 @@ public class FinalProject
 
                 if (response != null) break;
 
-                System.out.println("Try Again!");
+                System.out.print("Try Again!: ");
             }
 
             if (response != null && response.equalsIgnoreCase("Y"))
             {
                 university.DeletePerson(foundPerson);
-                System.out.println(foundPerson.GetFullName() + "has been deleted.");
+                System.out.println("\n" + foundPerson.GetFullName() + " has been deleted.");
             }
             else
             {
@@ -433,7 +433,7 @@ public class FinalProject
 
             if (response != null) break;
 
-            System.out.println("Try Again!");
+            System.out.print("Try Again!: ");
         }
 
         if (response.equalsIgnoreCase("Y"))
@@ -446,7 +446,7 @@ public class FinalProject
 
     public static void CreateReport(UniversityClass university)
     {
-        System.out.println("Would you like to sort your students by GPA or name? (Enter 1 for GPA. Enter 2 for name): ");
+        System.out.println("\nWould you like to sort your students by GPA or name? (Enter 1 for GPA. Enter 2 for name): ");
 
         String[] validInputs = {"1", "2"};
         String response;
@@ -457,7 +457,7 @@ public class FinalProject
 
             if (response != null) break;
 
-            System.out.println("Try Again!");
+            System.out.print("Try Again!: ");
         }
 
         if (response.equalsIgnoreCase("1"))
@@ -761,17 +761,14 @@ class UniversityClass
             if (person instanceof Student)
             {
                 studentList.add((Student)person);
-                DeletePerson(person);
             }
             else if (person instanceof Staff)
             {
                 staffList.add((Staff)person);
-                DeletePerson(person);
             }
             else if (person instanceof Faculty)
             {
                 facultyList.add((Faculty)person);
-                DeletePerson(person);
             }
         }
 
@@ -796,59 +793,55 @@ class UniversityClass
         SortStaffAlphabetical staffComparator = new SortStaffAlphabetical();
         Collections.sort(staffList, staffComparator);
 
-        AllPeople.addAll(facultyList);
-        AllPeople.addAll(staffList);
-        AllPeople.addAll(studentList);
-
         File reportFile = new File("report.txt");
 
         try (FileWriter writer = new FileWriter(reportFile))
         {
             LocalDate today = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
             String date = today.format(formatter);
             writer.write("Report created on " + date);
 
             writer.write("\n*******************************");
 
-            writer.write("\nFaculty Members");
-            writer.write("\n-------------------------");
+            writer.write("\n\nFaculty Members");
+            writer.write("\n\n-------------------------");
 
             int i = 1;
             for (Faculty faculty : facultyList)
             {
-                writer.write("\n" + i + ". " + faculty.GetFullName());
+                writer.write("\n\n" + i + ". " + faculty.GetFullName());
                 writer.write("\n\tID: " + faculty.GetID());
                 writer.write("\n\t" + faculty.GetRank() + ", " + faculty.GetDepartment());
                 i++;
             }
 
-            writer.write("\nStaff Members");
-            writer.write("\n-------------------------");
+            writer.write("\n\nStaff Members");
+            writer.write("\n\n-------------------------");
 
             i = 1;
             for (Staff staff : staffList)
             {
-                writer.write("\n" + i + ". " + staff.GetFullName());
+                writer.write("\n\n" + i + ". " + staff.GetFullName());
                 writer.write("\n\tID: " + staff.GetID());
                 writer.write("\n\t" + staff.GetDepartment() + ", " + staff.GetStatus());
                 i++;
             }
 
-            writer.write("\nStudents (Sorted by " + sortTypeString + ")");
-            writer.write("\n-------------------------");
+            writer.write("\n\nStudents (Sorted by " + sortTypeString + ")");
+            writer.write("\n\n-------------------------");
 
             i = 1;
             for (Student student : studentList)
             {
-                writer.write("\n" + i + ". " + student.GetFullName());
+                writer.write("\n\n" + i + ". " + student.GetFullName());
                 writer.write("\n\tID: " + student.GetID());
                 writer.write("\n\tGPA: " + student.GetGPA());
                 writer.write("\n\tCredit Hours:  " + student.GetCreditHours());
                 i++;
             }
 
-            System.out.println("\nFile Path" + reportFile.getAbsolutePath());
+            //System.out.println("\nFile Path: " + reportFile.getAbsolutePath());
         }
         catch (IOException ex)
         {

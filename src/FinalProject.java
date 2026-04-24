@@ -1,6 +1,8 @@
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 // Final Project Done by : Victor Avila
 
@@ -684,8 +686,7 @@ class UniversityClass
 
     public boolean DeletePerson(Person person)
     {
-        AllPeople.remove(person);
-        return true;
+        return AllPeople.remove(person);
     }
 
     public Person SearchForPerson(String ID, PersonType type)
@@ -746,26 +747,163 @@ class UniversityClass
 
     public void CreateReport(int sortType)
     {
+        ArrayList<Student> studentList = new ArrayList<>();
+        ArrayList<Staff> staffList = new ArrayList<>();
+        ArrayList<Faculty> facultyList = new ArrayList<>();
+
+        for (Person person : AllPeople)
+        {
+            if (person == null) continue;
+
+            if (person instanceof Student)
+            {
+                studentList.add((Student)person);
+                DeletePerson(person);
+            }
+            else if (person instanceof Staff)
+            {
+                staffList.add((Staff)person);
+                DeletePerson(person);
+            }
+            else if (person instanceof Faculty)
+            {
+                facultyList.add((Faculty)person);
+                DeletePerson(person);
+            }
+        }
+
+        String sortTypeString;
+
         if (sortType == 1)
         {
-            SortStudentsByGPA();
+            sortTypeString = "GPA";
+            SortStudentsByGPA comparator = new SortStudentsByGPA();
+            Collections.sort(studentList, comparator);
         }
         else
         {
-            SortStudentsByName();
+            sortTypeString = "Name";
+            SortStudentsByName comparator = new SortStudentsByName();
+            Collections.sort(studentList, comparator);
         }
 
+        SortFacultyByDepartment facultyComparator = new SortFacultyByDepartment();
+        Collections.sort(facultyList, facultyComparator);
 
+        SortStaffAlphabetical staffComparator = new SortStaffAlphabetical();
+        Collections.sort(staffList, staffComparator);
+
+        AllPeople.addAll(facultyList);
+        AllPeople.addAll(staffList);
+        AllPeople.addAll(studentList);
+
+        try (FileWriter writer = new FileWriter("report.txt"))
+        {
+            LocalDate today = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String date = today.format(formatter);
+            writer.write("Report created on " + date);
+
+            writer.write("\n*******************************");
+
+            writer.write("\nFaculty Members");
+            writer.write("\n-------------------------");
+
+            int i = 1;
+            for (Faculty faculty : facultyList)
+            {
+                writer.write("\n" + i + ". " + faculty.GetFullName());
+                writer.write("\n\tID: " + faculty.GetID());
+                writer.write("\n\t" + faculty.GetRank() + ", " + faculty.GetDepartment());
+                i++;
+            }
+
+            writer.write("\nStaff Members");
+            writer.write("\n-------------------------");
+
+            i = 1;
+            for (Staff staff : staffList)
+            {
+                writer.write("\n" + i + ". " + staff.GetFullName());
+                writer.write("\n\tID: " + staff.GetID());
+                writer.write("\n\t" + staff.GetDepartment() + ", " + staff.GetStatus());
+                i++;
+            }
+
+            writer.write("\nStudents (Sorted by " + sortTypeString + ")");
+            writer.write("\n-------------------------");
+
+            i = 1;
+            for (Student student : studentList)
+            {
+                writer.write("\n" + i + ". " + student.GetFullName());
+                writer.write("\n\tID: " + student.GetID());
+                writer.write("\n\tGPA: " + student.GetGPA());
+                writer.write("\n\tCredit Hours:  " + student.GetCreditHours());
+                i++;
+            }
+        }
+        catch (IOException ex)
+        {
+            System.out.println("An error occured when writing the file");
+            ex.printStackTrace();
+        }
     }
+}
 
-    private void SortStudentsByName()
+class SortStudentsByGPA implements Comparator
+{
+    @Override
+    public int compare(Object o1, Object o2)
     {
+        Student student1 = (Student) o1;
+        Student student2 = (Student) o2;
 
+        if (student1.GetGPA() > student2.GetGPA()) return -1;
+        if (student1.GetGPA() < student2.GetGPA()) return 1;
+        return 0;
     }
+}
 
-    private void SortStudentsByGPA()
+class SortStudentsByName implements Comparator
+{
+    @Override
+    public int compare(Object o1, Object o2)
     {
+        Student student1 = (Student) o1;
+        Student student2 = (Student) o2;
 
+        if (student1.GetFullName().compareToIgnoreCase(student2.GetFullName()) < 0) return -1;
+        if (student1.GetFullName().compareToIgnoreCase(student2.GetFullName()) > 0) return 1;
+        return 0;
+    }
+}
+
+class SortFacultyByDepartment implements Comparator
+{
+    @Override
+    public int compare(Object o1, Object o2)
+    {
+        Faculty faculty1 = (Faculty) o1;
+        Faculty faculty2 = (Faculty) o2;
+
+        if (faculty1.GetDepartment().compareToIgnoreCase(faculty2.GetDepartment()) < 0) return -1;
+        if (faculty1.GetDepartment().compareToIgnoreCase(faculty2.GetDepartment()) > 0) return 1;
+        return 0;
+    }
+}
+
+class SortStaffAlphabetical implements Comparator
+{
+    @Override
+    public int compare(Object o1, Object o2)
+    {
+        Staff staff1 = (Staff) o1;
+        Staff staff2 = (Staff) o2;
+
+        if (staff1.GetFullName().compareToIgnoreCase(staff2.GetFullName()) < 0) return -1;
+        if (staff1.GetFullName().compareToIgnoreCase(staff2.GetFullName()) > 0) return 1;
+        return 0;
     }
 }
 
@@ -870,14 +1008,19 @@ abstract class Employee extends Person
     {
         if (newDepartment == null) return false;
 
-        boolean validInput =
-                newDepartment.equalsIgnoreCase("Mathematics")
-                || newDepartment.equalsIgnoreCase("Engineering")
-                || newDepartment.equalsIgnoreCase("English");
-
-        if (validInput)
+        if (newDepartment.equalsIgnoreCase("Mathematics"))
         {
-            this.department = newDepartment;
+            this.department = "Mathematics";
+            return true;
+        }
+        else if (newDepartment.equalsIgnoreCase("Engineering"))
+        {
+            this.department = "Engineering";
+            return true;
+        }
+        else if (newDepartment.equalsIgnoreCase("English"))
+        {
+            this.department = "English";
             return true;
         }
 
@@ -906,9 +1049,14 @@ class Faculty extends Employee
 
     public boolean SetRank(String newRank)
     {
-        if (newRank.equalsIgnoreCase("Professor") || newRank.equalsIgnoreCase("Adjunct"))
+        if (newRank.equalsIgnoreCase("Professor"))
         {
-            this.rank = newRank;
+            this.rank = "Professor";
+            return true;
+        }
+        else if (newRank.equalsIgnoreCase("Adjunct"))
+        {
+            this.rank = "Adjunct";
             return true;
         }
 
@@ -951,9 +1099,14 @@ class Staff extends Employee
     {
         if (newStatus == null) return false;
 
-        if (newStatus.equalsIgnoreCase("Part-Time") || newStatus.equalsIgnoreCase("Full-Time"))
+        if (newStatus.equalsIgnoreCase("Part-Time"))
         {
-            this.status = newStatus;
+            this.status = "Part-Time";
+            return true;
+        }
+        else if (newStatus.equalsIgnoreCase("Full-Time"))
+        {
+            this.status = "Full-Time";
             return true;
         }
 
